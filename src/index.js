@@ -14,6 +14,16 @@ import { ApolloProvider, createNetworkInterface, ApolloClient } from 'react-apol
 const networkInterface = createNetworkInterface({
   uri: 'https://api.graph.cool/simple/v1/cj6u6wp740m4u0107d5gl6u8f'
 })
+networkInterface.use([{
+  applyMiddleware(req, next) {
+    if (!req.options.headers) {
+      req.options.headers = {}
+    }
+    const token = localStorage.getItem(GC_AUTH_TOKEN)
+    req.options.headers.authorization = token ? `Bearer ${token}` : null
+    next()
+  }
+}])
 //STEP 3 instantialize client
 const client = new ApolloClient({
   networkInterface
@@ -29,13 +39,4 @@ ReactDOM.render(
 );
 registerServiceWorker();
 
-networkInterface.use([{
-  applyMiddleware(req, next) {
-    if (!req.options.headers) {
-      req.options.headers = {}
-    }
-    const token = localStorage.getItem(GC_AUTH_TOKEN)
-    req.options.headers.authorization = token ? `Bearer ${token}` : null
-    next()
-  }
-}])
+
